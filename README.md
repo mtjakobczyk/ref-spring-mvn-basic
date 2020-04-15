@@ -53,8 +53,8 @@ Build process is done through Maven (using Spring Boot and Spotify Dockerfile pl
 
 #### Unit Testing
 There are two unit tests prepared:
-- shouldReturnOK() that verifies the REST resource is present under the /uuid path and returns 200 OK
-- shouldReturnGeneratorName() that verifies whether the application reads one of the returned values from environment variable
+- `shouldReturnOK()` that verifies the REST resource is present under the /uuid path and returns 200 OK
+- `shouldReturnGeneratorName()` that verifies whether the application reads one of the returned values from environment variable
 
 The unit tests rely on Spring Boot Test Framework (including Spring MVC Test components).  
 
@@ -95,3 +95,55 @@ Output:
     [INFO] Total time:  5.211 s
     [INFO] Finished at: 2020-04-15T19:00:51+02:00
     [INFO] ------------------------------------------------------------------------
+
+#### Packaging
+
+As a matter of fact, packaging is performed in two stages: 
+1. compiled Java classes are collected together and stored in an **executable JAR**
+2. **Docker Image** is created: the JAR is added to a OpenJDK-based image and executed
+
+##### Stage 1: JAR
+Maven build part
+
+    ...
+    [INFO] --- maven-jar-plugin:3.1.2:jar (default-jar) @ basic-spring ---
+    [INFO] Building jar: /Users/mjk/git/ref-spring-mvn-basic/service/basic-spring/target/basic-spring-1.0-SNAPSHOT.jar
+    ...
+
+Result: JAR
+
+    .
+    ├── Dockerfile
+    ├── pom.xml
+    ├── src
+    ...
+    └── target
+        ├── basic-spring-1.0-SNAPSHOT.jar
+
+##### Stage 2: Docker Image
+Maven build part    
+    
+    ...
+    [INFO] --- dockerfile-maven-plugin:1.4.13:build (default) @ basic-spring ---
+    ...
+    [INFO] Image will be built as mtjakobczyk/basic-spring:1.0-SNAPSHOT
+    [INFO] 
+    [INFO] Step 1/4 : FROM openjdk:8-jdk-alpine
+    ...
+    [INFO] Step 2/4 : ARG JAR_FILE=target/*.jar
+    ...
+    [INFO] Step 3/4 : COPY ${JAR_FILE} app.jar
+    ...
+    [INFO] Step 4/4 : ENTRYPOINT ["java","-jar","/app.jar"]
+    ...
+    [INFO] Successfully built fe04154972b4
+    [INFO] Successfully tagged mtjakobczyk/basic-spring:1.0-SNAPSHOT
+    ...
+    [INFO] Successfully built mtjakobczyk/basic-spring:1.0-SNAPSHOT
+    ...
+    
+Result: Docker Image
+
+    REPOSITORY                 TAG                 IMAGE ID            CREATED             SIZE
+    mtjakobczyk/basic-spring   1.0-SNAPSHOT        164f86ca9ada        5 seconds ago       135MB
+    openjdk                    8-jdk-alpine        a3562aa0b991        11 months ago       105MB
