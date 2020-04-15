@@ -23,6 +23,7 @@
   	<java.version>1.8</java.version>
   	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   	<dockerfile.maven.plugin.version>1.4.13</dockerfile.maven.plugin.version>
+  	<dockerfile.maven.plugin.repository>mtjakobczyk</dockerfile.maven.plugin.repository>
   </properties>
   
   <dependencies>
@@ -56,7 +57,7 @@
           </execution>
         </executions>
         <configuration>
-          <repository>mtjakobczyk/basic-spring</repository>
+          <repository>${dockerfile.maven.plugin.repository}/${project.artifactId}</repository>
           <tag>${project.version}</tag>
           <buildArgs>
             <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
