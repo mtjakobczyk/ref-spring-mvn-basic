@@ -6,6 +6,7 @@ This is a minimalistic Spring Boot application (REST API) used to demonstrate a 
 - packing the JAR into OpenJDK-based Docker image
 - pushing the image to the Container Image Registry (here Docker Hub)
 
+### Application
 The application alone returns a dynamically generated UUID (`uuid`) in a form of a JSON payload:
 
     { "generatorName":"uuid-1", "uuid":"5e8bbba3-baef-40ea-8cdf-40d81616d0fa" }
@@ -49,7 +50,9 @@ The project tree has been initialized using the following command:
                                 └── AppTest.java
 
 ### Build Process
-Build process is done through Maven (using Spring Boot and Spotify Dockerfile plugins).
+Build process is done through Maven (using Spring Boot and Spotify Dockerfile plugins):
+- https://docs.spring.io/spring-boot/docs/current/maven-plugin/usage.html
+- https://github.com/spotify/dockerfile-maven
 
 #### Unit Testing
 There are two unit tests prepared:
@@ -147,3 +150,40 @@ Result: Docker Image
     REPOSITORY                 TAG                 IMAGE ID            CREATED             SIZE
     mtjakobczyk/basic-spring   1.0-SNAPSHOT        164f86ca9ada        5 seconds ago       135MB
     openjdk                    8-jdk-alpine        a3562aa0b991        11 months ago       105MB
+
+#### Pushing to Docker Image Registry
+Pushing image to a remote reigstry consists of two stages:
+- tagging the image
+- pushing the properly tagged image
+
+##### Tagging
+We used a custom property in the `pom.xml` to set the repository name:
+
+    <properties>
+        ...
+        <dockerfile.maven.plugin.repository>mtjakobczyk</dockerfile.maven.plugin.repository>
+    </properties>
+
+We have to tag the image by using a prefix specific to the container registry (for example `registry.hub.docker.com` in case of the Docker Hub). We can override the property using the `-D` parameter:
+
+    mvn dockerfile:tag -Ddockerfile.maven.plugin.repository=registry.hub.docker.com/mtjakobczyk
+    
+Docker Images:
+
+    REPOSITORY                                         TAG                 IMAGE ID            CREATED             SIZE
+    mtjakobczyk/basic-spring                           1.0-SNAPSHOT        164f86ca9ada        11 minutes ago      135MB
+    registry.hub.docker.com/mtjakobczyk/basic-spring   1.0-SNAPSHOT        164f86ca9ada        11 minutes ago      135MB
+    openjdk                                            8-jdk-alpine        a3562aa0b991        11 months ago       105MB
+
+##### Pushing
+To push the image we will use the `dockerfile:push` stage:
+
+    mvn dockerfile:push -Ddockerfile.maven.plugin.repository=registry.hub.docker.com/mtjakobczyk \ 
+        -Ddockerfile.username=$REGISTRY_USER -Ddockerfile.password="$REGISTRY_PASS" 
+        
+Maven build part
+
+    [INFO] --- dockerfile-maven-plugin:1.4.13:push (default-cli) @ basic-spring ---
+    [INFO] The push refers to repository [registry.hub.docker.com/mtjakobczyk/basic-spring]
+    
+    
