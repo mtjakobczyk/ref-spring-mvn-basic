@@ -1,2 +1,2 @@
-# ref-spring-mvn-basic
-Reference application - Spring, Maven (basic), Docker
+# Reference application - Spring, Maven (basic), Docker
+
