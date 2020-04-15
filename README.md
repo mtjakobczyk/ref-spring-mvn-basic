@@ -185,5 +185,7 @@ Maven build part
 
     [INFO] --- dockerfile-maven-plugin:1.4.13:push (default-cli) @ basic-spring ---
     [INFO] The push refers to repository [registry.hub.docker.com/mtjakobczyk/basic-spring]
+    ...
+    [INFO] Image ceaf9e1ebef5: Pushed
     
-    
+![Image in Docker Hub](https://github.com/mtjakobczyk/ref-spring-mvn-basic/blob/master/docs/docker-hub-screen.png)
