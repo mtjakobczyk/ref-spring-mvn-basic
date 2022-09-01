@@ -189,3 +189,4 @@ Maven build part
     [INFO] Image ceaf9e1ebef5: Pushed
     
 ![Image in Docker Hub](https://github.com/mtjakobczyk/ref-spring-mvn-basic/blob/master/docs/docker-hub-screen.png)
+
